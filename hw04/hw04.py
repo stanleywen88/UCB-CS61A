@@ -10,7 +10,22 @@ def merge(lst1, lst2):
     >>> merge([5, 7], [2, 4, 6])
     [2, 4, 5, 6, 7]
     """
-    "*** YOUR CODE HERE ***"
+    # edge cases
+    if not lst1:
+        return lst2
+    if not lst2:
+        return lst1
+    
+    output = []
+    while lst1 and lst2:
+        if lst1[0] <= lst2[0]:
+            output.append(lst1[0])
+            lst1 = lst1[1:]
+        else:
+            output.append(lst2[0])
+            lst2 = lst2[1:]
+    output += lst1 + lst2
+    return output
 
 
 class Mint:
@@ -46,12 +61,12 @@ class Mint:
 
     def __init__(self):
         self.update()
-
+        
     def create(self, coin):
-        "*** YOUR CODE HERE ***"
+        return coin(self.year)
 
     def update(self):
-        "*** YOUR CODE HERE ***"
+        self.year = Mint.present_year
 
 
 class Coin:
@@ -61,8 +76,10 @@ class Coin:
         self.year = year
 
     def worth(self):
-        "*** YOUR CODE HERE ***"
-
+        if Mint.present_year - self.year > 50:
+            return self.cents + Mint.present_year - self.year - 50
+        else:
+            return self.cents
 
 class Nickel(Coin):
     cents = 5
@@ -109,4 +126,35 @@ class VendingMachine:
     >>> w.vend()
     'Here is your soda.'
     """
-    "*** YOUR CODE HERE ***"
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
+        self.amount = 0
+        self.balance = 0
+    
+    def vend(self):
+        if self.amount == 0:
+            return "Nothing left to vend. Please restock."
+        if self.price > self. balance:
+            return "You must add $" + str(self.price-self.balance) + ' more funds.'
+        elif self.balance > self.price:
+            change = self.balance - self.price
+            self.balance = 0
+            self.amount -= 1
+            return "Here is your " + self.name + " and $" + str(change) + ' change.'
+        elif self.balance == self.price:
+            self.balance = 0
+            self.amount -= 1
+            return 'Here is your ' + self.name + '.'
+
+    def add_funds(self, dollar):
+        if self.amount == 0:
+            return "Nothing left to vend. Please restock. Here is your $" + str(dollar) + '.'
+        else:
+            self.balance += dollar
+            return "Current balance: $" + str(self.balance)
+
+    def restock(self, amount):
+        self.amount += amount
+        return "Current " + self.name + ' stock: ' + str(self.amount)
+

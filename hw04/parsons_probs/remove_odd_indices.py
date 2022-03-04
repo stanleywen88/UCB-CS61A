@@ -12,4 +12,9 @@ def remove_odd_indices(lst, odd):
     >>> m
     [6, 8]
     """
-    "*** YOUR CODE HERE ***"
+    if odd:
+        return [lst[i] for i in range(len(lst)) if i%2 == 0]
+    else:
+        return [i for i in lst if i%2 ==0]
+
+
