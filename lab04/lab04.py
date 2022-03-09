@@ -66,5 +66,6 @@ def pascal(row, column):
         return 1
     if column == 0 or column == row: # first or last, return 1
         return 1
+    # trace back to sum from upper left and upper
     return pascal(row-1, column-1) + pascal(row-1, column)
     
