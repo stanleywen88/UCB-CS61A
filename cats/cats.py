@@ -88,7 +88,30 @@ def accuracy(typed, reference):
     typed_words = split(typed)
     reference_words = split(reference)
     # BEGIN PROBLEM 3
-    "*** YOUR CODE HERE ***"
+    # Edge case: both string are empty
+    if len(typed_words) == len(reference_words) == 0:
+        return 100.0
+    # edge case: one of the string is empty
+    if len(typed_words) == 0 or len(reference_words) == 0:
+        return 0.0
+    
+    correct = 0 # number of correct words
+    search_range = 0 
+    # decide range for later comparison 
+    if len(typed_words) < len(reference_words):
+        search_range = len(typed_words)
+    else:
+        search_range = len(reference_words)
+
+    # comparison
+    for i in range(search_range):
+        if typed_words[i] == reference_words[i]:
+            correct += 1
+    
+    # number of correct / length of typed words
+    return (correct/len(typed_words))*100.0
+
+    
     # END PROBLEM 3
 
 
@@ -106,7 +129,8 @@ def wpm(typed, elapsed):
     """
     assert elapsed > 0, 'Elapsed time must be positive'
     # BEGIN PROBLEM 4
-    "*** YOUR CODE HERE ***"
+    # 5 characters count as 1 word
+    return (len(typed)/5) * (60/elapsed)
     # END PROBLEM 4
 
 
@@ -133,7 +157,23 @@ def autocorrect(typed_word, word_list, diff_function, limit):
     'testing'
     """
     # BEGIN PROBLEM 5
-    "*** YOUR CODE HERE ***"
+    import math
+    # edge case: typed_word already in word_list
+    if typed_word in word_list:
+        return typed_word
+    
+    lowest = ''
+    lowest_diff = math.inf
+    for i in range(len(word_list)):
+        temp_diff = diff_function(typed_word, word_list[i], limit)
+        if temp_diff <= limit and temp_diff < lowest_diff:
+            lowest_diff, lowest = temp_diff, word_list[i]
+    
+    # return typed word if all words in word_list exceed the limit in difference
+    if lowest == '':
+        lowest = typed_word
+
+    return lowest
     # END PROBLEM 5
 
 
@@ -160,7 +200,15 @@ def sphinx_swaps(start, goal, limit):
     5
     """
     # BEGIN PROBLEM 6
-    assert False, 'Remove this line'
+    if start == goal: # no more comparison needed 
+        return 0
+    if limit == 0 and (len(start) != 0 or len(goal) != 0): # limit reach, return integer > limit 
+        return 1
+    if start == '' or goal == '': 
+        return max(len(start), len(goal))
+    if start[0] != goal[0]: 
+        return 1 + sphinx_swaps(start[1:], goal[1:], limit-1)
+    return 0 + sphinx_swaps(start[1:], goal[1:], limit)
     # END PROBLEM 6
 
 
@@ -181,25 +229,18 @@ def minimum_mewtations(start, goal, limit):
     >>> minimum_mewtations("ckiteus", "kittens", big_limit) # ckiteus -> kiteus -> kitteus -> kittens
     3
     """
-    assert False, 'Remove this line'
-
-    if ______________:  # Fill in the condition
-        # BEGIN
-        "*** YOUR CODE HERE ***"
-        # END
-
-    elif ___________:  # Feel free to remove or add additional cases
-        # BEGIN
-        "*** YOUR CODE HERE ***"
-        # END
-
-    else:
-        add = ...  # Fill in these lines
-        remove = ...
-        substitute = ...
-        # BEGIN
-        "*** YOUR CODE HERE ***"
-        # END
+    if start == goal: 
+        return 0
+    if limit == 0 and (len(start) != 0 or len(goal) != 0): 
+        return 1
+    if start == '' or goal == '': 
+        return max(len(start), len(goal))
+    if start[0] != goal[0]: # slicing the string -> taking action
+        add = 1 + minimum_mewtations(start, goal[1:], limit-1) 
+        remove = 1 + minimum_mewtations(start[1:], goal, limit-1)
+        substitute = 1 + minimum_mewtations(start[1:], goal[1:], limit-1)
+        return min(add, remove, substitute)
+    return minimum_mewtations(start[1:], goal[1:], limit)
 
 
 def final_diff(start, goal, limit):
@@ -240,7 +281,15 @@ def report_progress(sofar, prompt, user_id, upload):
     0.2
     """
     # BEGIN PROBLEM 8
-    "*** YOUR CODE HERE ***"
+    correct = 0
+    for i in range(len(sofar)):
+        if sofar[i] == prompt[i]: # correct words
+            correct += 1
+        else: # end comparison after encountering the 1st error
+            break
+    progress = correct / len(prompt)
+    upload({'id': user_id, 'progress': progress})
+    return progress
     # END PROBLEM 8
 
 
@@ -262,7 +311,15 @@ def time_per_word(words, times_per_player):
     [[6, 3, 6, 2], [10, 6, 1, 2]]
     """
     # BEGIN PROBLEM 9
-    "*** YOUR CODE HERE ***"
+    # one-liner below
+    # return {'words': words, 'times': [[i[x] - i[x-1] for x in range(1, len(i))] for i in times_per_player]}
+
+    # easier-to-read solution
+    match = {'words': words, 'times': []}
+    for i in times_per_player:
+        time = [i[x] - i[x-1] for x in range(1, len(i))] # getting time elapse 
+        match['times'].append(time)
+    return match
     # END PROBLEM 9
 
 
@@ -284,7 +341,12 @@ def fastest_words(match):
     player_indices = range(len(match["times"]))  # contains an *index* for each player
     word_indices = range(len(match["words"]))    # contains an *index* for each word
     # BEGIN PROBLEM 10
-    "*** YOUR CODE HERE ***"
+    output = [[] for _ in player_indices] # initialize 2D array as output 
+    for i in word_indices:
+        players_time = [time(match, x, i) for x in player_indices] # getting time from each player
+        index = players_time.index(min(players_time)) # getting index(player) of the minimum time
+        output[index].append(word_at(match, i)) # add the word matching the index to output
+    return output
     # END PROBLEM 10
 
 
