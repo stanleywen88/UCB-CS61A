@@ -52,12 +52,14 @@ class Insect:
     """An Insect, the base class of Ant and Bee, has health and a Place."""
 
     damage = 0
+    is_waterproof = False
     # ADD CLASS ATTRIBUTES HERE
 
     def __init__(self, health, place=None):
         """Create an Insect with a health amount and a starting PLACE."""
         self.health = health
         self.place = place  # set by Place.add_insect and Place.remove_insect
+        self.doubled = False
 
     def reduce_health(self, amount):
         """Reduce health by AMOUNT, and remove the insect from its place if it
@@ -158,7 +160,7 @@ class Ant(Insect):
     def double(self):
         """Double this ants's damage, if it has not already been doubled."""
         # BEGIN Problem 12
-        "*** YOUR CODE HERE ***"
+        self.damage *= 2
         # END Problem 12
 
 
@@ -422,17 +424,28 @@ class Water(Place):
         """Add an Insect to this place. If the insect is not waterproof, reduce
         its health to 0."""
         # BEGIN Problem 10
-        "*** YOUR CODE HERE ***"
+        Place.add_insect(self, insect)
+        if not insect.is_waterproof:
+            Insect.reduce_health(insect, insect.health)
         # END Problem 10
 
 # BEGIN Problem 11
-# The ScubaThrower class
+class ScubaThrower(ThrowerAnt):
+    """ScubaThrower can attack underwater."""
+
+    name = 'Scuba'
+    food_cost = 6
+    is_waterproof = True
+    implemented = True
+
+    def __init__(self, health=1):
+        super().__init__(health)
 # END Problem 11
 
 # BEGIN Problem 12
 
 
-class QueenAnt(Ant):  # You should change this line
+class QueenAnt(ScubaThrower):
 # END Problem 12
     """The Queen of the colony. The game is over if a bee enters her place."""
 
@@ -440,7 +453,7 @@ class QueenAnt(Ant):  # You should change this line
     food_cost = 7
     # OVERRIDE CLASS ATTRIBUTES HERE
     # BEGIN Problem 12
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
     # END Problem 12
 
     @classmethod
@@ -450,7 +463,11 @@ class QueenAnt(Ant):  # You should change this line
         returns None otherwise. Remember to call the construct() method of the superclass!
         """
         # BEGIN Problem 12
-        "*** YOUR CODE HERE ***"
+        if gamestate.queen:
+            return
+        else: 
+            gamestate.queen = True
+            return super().construct(gamestate)
         # END Problem 12
 
     def action(self, gamestate):
@@ -458,7 +475,23 @@ class QueenAnt(Ant):  # You should change this line
         in her tunnel.
         """
         # BEGIN Problem 12
-        "*** YOUR CODE HERE ***"
+        place = self.place.exit
+        while place:
+            ant = place.ant
+            if ant:
+                if not ant.doubled:
+                    ant.doubled = True
+                    ant.double()
+                if ant.is_container and ant.ant_contained:
+                    if not ant.ant_contained.doubled:
+                        ant.ant_contained.doubled = True
+                        ant.ant_contained.double()
+            place = place.exit
+        ThrowerAnt.action(self, gamestate)
+        
+    def remove_from(self, place):
+        """A queen can't be removed."""
+            
         # END Problem 12
 
     def reduce_health(self, amount):
@@ -466,7 +499,9 @@ class QueenAnt(Ant):  # You should change this line
         remaining, signal the end of the game.
         """
         # BEGIN Problem 12
-        "*** YOUR CODE HERE ***"
+        self.health -= amount
+        if self.health <= 0:
+            ants_lose()
         # END Problem 12
 
 
@@ -485,6 +520,7 @@ class Bee(Insect):
 
     name = 'Bee'
     damage = 1
+    is_waterproof = True
     # OVERRIDE CLASS ATTRIBUTES HERE
 
     def sting(self, ant):
@@ -730,6 +766,7 @@ class GameState:
         """
         self.time = 0
         self.food = food
+        self.queen = None 
         self.strategy = strategy
         self.beehive = beehive
         self.ant_types = OrderedDict((a.name, a) for a in ant_types)
