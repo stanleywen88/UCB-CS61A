@@ -1,0 +1,29 @@
+=====================================================================
+Assignment: Lab 7
+OK, version v1.18.1
+=====================================================================
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Running tests
+
+---------------------------------------------------------------------
+Doctests for label_multiplier
+
+>>> t1 = Tree(2, [Tree(4, [Tree(6)]), Tree(8)])
+>>> label_multiplier(t1, 10)
+>>> t1
+Tree(20, [Tree(40, [Tree(60)]), Tree(80)])
+>>> t2 = Tree(10, [Tree(9), Tree(8, [Tree(7), Tree(6)]), Tree(5, [Tree(4), Tree(3), Tree(2)])])
+>>> label_multiplier(t2, 3)
+>>> t2
+Tree(30, [Tree(27), Tree(24, [Tree(21), Tree(18)]), Tree(15, [Tree(12), Tree(9), Tree(6)])])
+-- OK! --
+---------------------------------------------------------------------
+Test summary
+    1 test cases passed! No cases failed.
+
+Backup... 0.0% completeBackup... 100% complete
+[31mBackup past deadline by 3 days, 15 hours, 26 minutes, and 7 seconds[0m
+[32mBackup successful for user: stanleywen@berkeley.edu[0m
+[32mURL: https://okpy.org/cal/cs61a/sp22/lab07/backups/Zw427Q[0m
+

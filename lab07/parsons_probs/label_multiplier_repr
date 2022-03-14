@@ -1,0 +1,8 @@
+def label_multiplier(t, val): #0given
+t.label = !BLANK  #1given #blankt.label*val
+for !BLANK:  #1given #blankb in t.branches
+label_multiplier(!BLANK, !BLANK)  #2given #blankb #blankval
+print('DEBUG:', !BLANK)
+print('DEBUG:', !BLANK)
+# !BLANK
+# !BLANK
