@@ -523,6 +523,12 @@ class Bee(Insect):
     is_waterproof = True
     # OVERRIDE CLASS ATTRIBUTES HERE
 
+    def __init__(self, health, place=None):
+        super().__init__(health, place)
+        self.scared = False
+        self.scare_turn = 0
+        self.slow_turn = 0
+
     def sting(self, ant):
         """Attack an ANT, reducing its health by 1."""
         ant.reduce_health(self.damage)
@@ -548,8 +554,37 @@ class Bee(Insect):
         destination = self.place.exit
 
         # Extra credit: Special handling for bee direction
+        '''
+        if self.scare_turn > 0 or self.slow_turn > 0:
+            if gamestate.time % 2 == 0:
+                if self.scare_turn > 0:
+                    if self.slow_turn > 0: # can't back away if slowed
+                        return
+                    else:
+                        if not self.place.is_hive:
+                            if self.blocked():
+                                self.sting(self.place.ant)  
+                                self.scare_turn -= 1
+                            else:
+                                self.move_to(self.place.entrance)
+                                self.scare_turn -= 1
+                elif self.slow_turn > 0:
+                    self.slow_turn -= 1
+                    self.move_to(destination)
+                else:
+                    if self.blocked():
+                        self.sting(self.place.ant)       
+                    elif self.health > 0 and destination is not None:
+                        self.move_to(destination)
+            else:
+                if self.slow_turn > 0:
+                    self.slow_turn -= 1
+                if self.scare_turn > 0:
+                    self.scare_turn -= 1
+        else:
+            '''
         if self.blocked():
-            self.sting(self.place.ant)
+            self.sting(self.place.ant)       
         elif self.health > 0 and destination is not None:
             self.move_to(destination)
 
@@ -564,7 +599,7 @@ class Bee(Insect):
     def slow(self, length):
         """Slow the bee for a further LENGTH turns."""
         # BEGIN Problem EC
-        "*** YOUR CODE HERE ***"
+        self.slow_turn += length
         # END Problem EC
 
     def scare(self, length):
@@ -573,7 +608,8 @@ class Bee(Insect):
         go backwards LENGTH times.
         """
         # BEGIN Problem EC
-        "*** YOUR CODE HERE ***"
+        self.scare_turn = length
+        self.scared = True
         # END Problem EC
 
 
@@ -610,7 +646,7 @@ class SlowThrower(ThrowerAnt):
     name = 'Slow'
     food_cost = 4
     # BEGIN Problem EC
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
     # END Problem EC
 
     def throw_at(self, target):
@@ -624,12 +660,13 @@ class ScaryThrower(ThrowerAnt):
     name = 'Scary'
     food_cost = 6
     # BEGIN Problem EC
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
     # END Problem EC
 
     def throw_at(self, target):
         # BEGIN Problem EC
-        "*** YOUR CODE HERE ***"
+        if not target.scared:
+            target.scare(2)
         # END Problem EC
 
 
